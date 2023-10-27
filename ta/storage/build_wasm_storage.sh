@@ -17,7 +17,7 @@
 rm ta_entry.wo storage.wo
 rm A7F289B6DF8A7A479F9932E90C0AD0A2
 rm A7F289B6DF8A7A479F9932E90C0AD0A2.aot
-rm ../../../../optee_nuttx/optee_nuttx/compat/wasm/wasm_ta_framework.wo
+rm ../../../../optee_nuttx/optee_nuttx/wasm/wasm_ta_framework.wo
 
 make -f Makefile-wasm
 ../../../../../../prebuilts/clang/linux/wasm/wamrc --target=thumbv8m.main --target-abi=gnueabihf --cpu=cortex-m55 --enable-indirect-mode --disable-llvm-intrinsics -o A7F289B6DF8A7A479F9932E90C0AD0A2.aot A7F289B6DF8A7A479F9932E90C0AD0A2
