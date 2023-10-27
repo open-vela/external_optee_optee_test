@@ -17,7 +17,7 @@
 rm ta_entry.wo cryp_taf.wo
 rm A05B3ECBF1ADE011998B0002A5D5C51B
 rm A05B3ECBF1ADE011998B0002A5D5C51B.aot
-rm ../../../../optee_nuttx/optee_nuttx/compat/wasm/wasm_ta_framework.wo
+rm ../../../../optee_nuttx/optee_nuttx/wasm/wasm_ta_framework.wo
 
 make -f Makefile-wasm
 ../../../../../../prebuilts/clang/linux/wasm/wamrc --target=thumbv8m.main --target-abi=gnueabihf --cpu=cortex-m55 --enable-indirect-mode --disable-llvm-intrinsics -o A05B3ECBF1ADE011998B0002A5D5C51B.aot A05B3ECBF1ADE011998B0002A5D5C51B

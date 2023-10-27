@@ -18,7 +18,7 @@ PROGNAME  = A7F289B6DF8A7A479F9932E90C0AD0A2
 STACKSIZE = 4096
 MAINSRC = ta_storage_entry.c storage.c
 
-CSRCS += ../../../../optee_nuttx/optee_nuttx/compat/wasm/wasm_ta_framework.c
+CSRCS += ../../../../optee_nuttx/optee_nuttx/wasm/wasm_ta_framework.c
 WASI_SDK_ROOT = ../../../../../../prebuilts/clang/linux/wasm
 include ../../../../../../vendor/xiaomi/mitee_iot/configs/defconfig
 include Wasm.mk
