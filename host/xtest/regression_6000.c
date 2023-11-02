@@ -1779,6 +1779,20 @@ static void xtest_tee_test_6016_loop(ADBG_Case_t *c, uint32_t storage_id)
 	size_t n = 0;
 	size_t m = 0;
 	pthread_t thr[NUM_THREADS] = { };
+	int32_t status;
+	pthread_attr_t attr;
+
+	status = pthread_attr_init(&attr);
+	if (status != 0) {
+		Do_ADBG_Log("pthread_attr_init failed\n");
+		return;
+	}
+
+	status = pthread_attr_setstacksize(&attr, 8192);
+	if (status != 0) {
+		Do_ADBG_Log("pthread_attr_setstacksize failed\n");
+		goto out;
+	}
 
 	for (m = 0; m < NUM_THREADS; m++)
 		if (!ADBG_EXPECT_TEEC_SUCCESS(c,
@@ -1791,7 +1805,7 @@ static void xtest_tee_test_6016_loop(ADBG_Case_t *c, uint32_t storage_id)
 		arg[n].storage_id = storage_id;
 		snprintf(arg[n].file_name, sizeof(arg[n].file_name),
 			"file_%zu", n);
-		if (!ADBG_EXPECT(c, 0, pthread_create(thr + n, NULL,
+		if (!ADBG_EXPECT(c, 0, pthread_create(thr + n, &attr,
 						test_6016_thread, arg + n)))
 			goto out;
 	}
@@ -1801,6 +1815,7 @@ out:
 		ADBG_EXPECT(c, 0, pthread_join(thr[i], NULL));
 	for (i = 0; i < m; i++)
 		TEEC_CloseSession(&arg[i].session);
+	pthread_attr_destroy(&attr);
 }
 
 /* concurency */
