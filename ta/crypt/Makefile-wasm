@@ -16,9 +16,17 @@
 
 PROGNAME  = A05B3ECBF1ADE011998B0002A5D5C51B
 STACKSIZE = 4096
-MAINSRC = ta_crypt_entry.c cryp_taf.c
-
-CSRCS = ../../../../optee_nuttx/optee_nuttx/wasm/wasm_ta_framework.c
+MAINSRC = ta_crypt_entry.c
+CSRCS += aes_impl.c
+CSRCS += aes_taf.c
+CSRCS += arith_taf.c
+CSRCS += cryp_taf.c
+CSRCS += derive_key_taf.c
+CSRCS += handle.c
+CSRCS += seed_rng_taf.c
+CSRCS += sha2_impl.c
+CSRCS += sha2_taf.c
+CSRCS += ../../../../optee_nuttx/optee_nuttx/wasm/wasm_ta_framework.c
 WASI_SDK_ROOT = ../../../../../../prebuilts/clang/linux/wasm
 include ../../../../../../vendor/xiaomi/mitee_iot/configs/defconfig
 include Wasm.mk
