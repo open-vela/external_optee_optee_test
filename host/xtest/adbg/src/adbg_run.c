@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2014, STMicroelectronics International N.V.
+ * Copyright (C) 2020-2023 Xiaomi Corporation
  */
 
 /*************************************************************************
@@ -96,7 +97,7 @@ int Do_ADBG_AppendToSuite(
 	free((void *)Dest_p->SuiteID_p);
 	Dest_p->SuiteID_p = p;
 
-	TAILQ_CONCAT(&Dest_p->cases, &Source_p->cases, link);
+	TAILQ_INSERT_TAIL(&Dest_p->suites, Source_p, link);
 	return 0;
 }
 
@@ -113,6 +114,7 @@ static int ADBG_RunSuite(
 	size_t NumSkippedTestCases = 0;
 	int failed_test = 0;
 	struct adbg_case_def *case_def = NULL;
+	struct adbg_suite_def *Suite_p = NULL;
 
 	Do_ADBG_Log("######################################################");
 	Do_ADBG_Log("#");
@@ -120,119 +122,121 @@ static int ADBG_RunSuite(
 	Do_ADBG_Log("#");
 	Do_ADBG_Log("######################################################");
 
-	TAILQ_FOREACH(case_def, &Runner_p->Suite_p->cases, link) {
-		/* Default match if by default all tests are to be run */
-		bool HaveMatch = !argc || !strcmp(argv[0], "-x");
-		int i = 0;
+	TAILQ_FOREACH(Suite_p, &Runner_p->Suite_p->suites, link) {
+		TAILQ_FOREACH(case_def, &Suite_p->cases, link) {
+			/* Default match if by default all tests are to be run */
+			bool HaveMatch = !argc || !strcmp(argv[0], "-x");
+			int i = 0;
 
-		for (i = 0; i < argc; i++) {
-			if (!strcmp(argv[i], "-x")) {
-				i++;
-				if (i >= argc) {
-					Do_ADBG_Log("Error: -x <test-id>");
-					return 1;
+			for (i = 0; i < argc; i++) {
+				if (!strcmp(argv[i], "-x")) {
+					i++;
+					if (i >= argc) {
+						Do_ADBG_Log("Error: -x <test-id>");
+						return 1;
+					}
+					if (strstr(case_def->TestID_p, argv[i]))
+						HaveMatch = false;
+				} else {
+					if (strstr(case_def->TestID_p, argv[i]))
+						HaveMatch = true;
 				}
-				if (strstr(case_def->TestID_p, argv[i]))
-					HaveMatch = false;
-			} else {
-				if (strstr(case_def->TestID_p, argv[i]))
-					HaveMatch = true;
 			}
-		}
-		if (!HaveMatch) {
-			NumSkippedTestCases++;
-			continue;
-		}
-
-		Case_p = ADBG_Case_New(case_def);
-		if (Case_p == NULL) {
-			Do_ADBG_Log("HEAP_ALLOC failed for Case %s!",
-				    case_def->TestID_p);
-			Runner_p->Result.AbortTestSuite = 1;
-			break;
-		}
-
-		TAILQ_INSERT_TAIL(&Runner_p->CasesList, Case_p, Link);
-
-		/* Start the parent test case */
-		Do_ADBG_BeginSubCase(Case_p, "%s", case_def->Title_p);
-
-		case_def->Run_fp(Case_p);
-
-		/* End abondoned subcases */
-		while (Case_p->CurrentSubCase_p != Case_p->FirstSubCase_p)
-			Do_ADBG_EndSubCase(Case_p, NULL);
-
-		/* End the parent test case */
-		Do_ADBG_EndSubCase(Case_p, "%s", case_def->Title_p);
-
-		/* Sum up the errors */
-		Runner_p->Result.NumTests += Case_p->Result.NumTests +
-					     Case_p->Result.NumSubTests;
-		Runner_p->Result.NumFailedTests +=
-			Case_p->Result.NumFailedTests +
-			Case_p->Result.
-			NumFailedSubTests;
-		Runner_p->Result.NumSubCases++;
-		if (Case_p->Result.NumFailedTests +
-		    Case_p->Result.NumFailedSubTests > 0)
-			Runner_p->Result.NumFailedSubCases++;
-
-		Runner_p->Result.AbortTestSuite = Case_p->Result.AbortTestSuite;
-
-		if (Runner_p->Result.AbortTestSuite) {
-			Do_ADBG_Log("Test suite aborted by %s!",
-				    case_def->TestID_p);
-			break;
-		}
-	}
-
-	Do_ADBG_Log("+-----------------------------------------------------");
-	if (argc > 0) {
-		bool test_exclusion = false;
-		int i = 0;
-
-		for (i = 0; i < argc; i++) {
-			if (!strcmp(argv[i], "-x")) {
-				test_exclusion = true;
+			if (!HaveMatch) {
+				NumSkippedTestCases++;
 				continue;
 			}
-			Do_ADBG_Log(
-				"Result of testsuite %s filtered by \"%s%s\":",
-				Runner_p->Suite_p->SuiteID_p,
-				test_exclusion ? "-x " : "", argv[i]);
-			test_exclusion = false;
+
+			Case_p = ADBG_Case_New(case_def);
+			if (Case_p == NULL) {
+				Do_ADBG_Log("HEAP_ALLOC failed for Case %s!",
+					    case_def->TestID_p);
+				Runner_p->Result.AbortTestSuite = 1;
+				break;
+			}
+
+			TAILQ_INSERT_TAIL(&Runner_p->CasesList, Case_p, Link);
+
+			/* Start the parent test case */
+			Do_ADBG_BeginSubCase(Case_p, "%s", case_def->Title_p);
+
+			case_def->Run_fp(Case_p);
+
+			/* End abondoned subcases */
+			while (Case_p->CurrentSubCase_p != Case_p->FirstSubCase_p)
+				Do_ADBG_EndSubCase(Case_p, NULL);
+
+			/* End the parent test case */
+			Do_ADBG_EndSubCase(Case_p, "%s", case_def->Title_p);
+
+			/* Sum up the errors */
+			Runner_p->Result.NumTests += Case_p->Result.NumTests +
+						     Case_p->Result.NumSubTests;
+			Runner_p->Result.NumFailedTests +=
+				Case_p->Result.NumFailedTests +
+				Case_p->Result.
+				NumFailedSubTests;
+			Runner_p->Result.NumSubCases++;
+			if (Case_p->Result.NumFailedTests +
+			    Case_p->Result.NumFailedSubTests > 0)
+				Runner_p->Result.NumFailedSubCases++;
+
+			Runner_p->Result.AbortTestSuite = Case_p->Result.AbortTestSuite;
+
+			if (Runner_p->Result.AbortTestSuite) {
+				Do_ADBG_Log("Test suite aborted by %s!",
+					    case_def->TestID_p);
+				break;
+			}
 		}
-	} else {
-		Do_ADBG_Log("Result of testsuite %s:",
-			    Runner_p->Suite_p->SuiteID_p);
-	}
 
-	TAILQ_FOREACH(Case_p, &Runner_p->CasesList, Link) {
-		ADBG_SubCase_Iterator_t Iterator;
-		ADBG_SubCase_t *SubCase_p;
-
-		ADBG_Case_IterateSubCase(Case_p, &Iterator);
-		while ((SubCase_p = ADBG_Case_NextSubCase(&Iterator)) != NULL) {
-			if (SubCase_p->Result.NumFailedTests +
-			    SubCase_p->Result.NumFailedSubTests > 0) {
-				if (SubCase_p->Result.FirstFailedFile_p !=
-				    NULL) {
-					Do_ADBG_Log(
-						"%s FAILED first error at %s:%d",
-						SubCase_p->TestID_p,
-						SubCase_p->
-							Result.FirstFailedFile_p,
-						SubCase_p->
-							Result.FirstFailedRow);
-				} else {
-					Do_ADBG_Log("%s FAILED",
-						    SubCase_p->TestID_p);
+		Do_ADBG_Log("+-----------------------------------------------------");
+		if (argc > 0) {
+			bool test_exclusion = false;
+			int i = 0;
+	
+			for (i = 0; i < argc; i++) {
+				if (!strcmp(argv[i], "-x")) {
+					test_exclusion = true;
+					continue;
 				}
-			} else if (ADBG_Case_SubCaseIsMain(Case_p, SubCase_p)) {
-				/* A level one test case is displayed
-					if successfull too */
-				Do_ADBG_Log("%s OK", SubCase_p->TestID_p);
+				Do_ADBG_Log(
+					"Result of testsuite %s filtered by \"%s%s\":",
+					Suite_p->SuiteID_p,
+					test_exclusion ? "-x " : "", argv[i]);
+				test_exclusion = false;
+			}
+		} else {
+			Do_ADBG_Log("Result of testsuite %s:",
+				    Suite_p->SuiteID_p);
+		}
+	
+		TAILQ_FOREACH(Case_p, &Runner_p->CasesList, Link) {
+			ADBG_SubCase_Iterator_t Iterator;
+			ADBG_SubCase_t *SubCase_p;
+	
+			ADBG_Case_IterateSubCase(Case_p, &Iterator);
+			while ((SubCase_p = ADBG_Case_NextSubCase(&Iterator)) != NULL) {
+				if (SubCase_p->Result.NumFailedTests +
+				    SubCase_p->Result.NumFailedSubTests > 0) {
+					if (SubCase_p->Result.FirstFailedFile_p !=
+					    NULL) {
+						Do_ADBG_Log(
+							"%s FAILED first error at %s:%d",
+							SubCase_p->TestID_p,
+							SubCase_p->
+								Result.FirstFailedFile_p,
+							SubCase_p->
+								Result.FirstFailedRow);
+					} else {
+						Do_ADBG_Log("%s FAILED",
+							    SubCase_p->TestID_p);
+					}
+				} else if (ADBG_Case_SubCaseIsMain(Case_p, SubCase_p)) {
+					/* A level one test case is displayed
+						if successfull too */
+					Do_ADBG_Log("%s OK", SubCase_p->TestID_p);
+				}
 			}
 		}
 	}

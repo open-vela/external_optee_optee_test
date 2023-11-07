@@ -3,6 +3,7 @@
  * Copyright (c) 2016, Linaro Limited
  * Copyright (c) 2014, STMicroelectronics International N.V.
  * Copyright (c) 2022, Arm Limited and Contributors. All rights reserved.
+ * Copyright (C) 2020-2023 Xiaomi Corporation
  */
 
 #include <err.h>
@@ -138,7 +139,7 @@ int main(int argc, char *argv[])
 	char *token = NULL;
 	ADBG_Suite_Definition_t all = {
 		.SuiteID_p = NULL,
-		.cases = TAILQ_HEAD_INITIALIZER(all.cases),
+		.suites = TAILQ_HEAD_INITIALIZER(all.suites),
 	};
 	bool exclusion = false;
 	size_t last_gen_option = 1;
