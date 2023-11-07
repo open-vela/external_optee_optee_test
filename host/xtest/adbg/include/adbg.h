@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (c) 2014, STMicroelectronics International N.V.
+ * Copyright (C) 2020-2023 Xiaomi Corporation
  */
 
 #ifndef ADBG_H
@@ -40,9 +41,16 @@ typedef struct adbg_case_def {
 
 TAILQ_HEAD(adbg_case_def_head, adbg_case_def);
 
+struct adbg_suite_def;
+TAILQ_HEAD(adbg_suite_def_head, adbg_suite_def);
+
 typedef struct adbg_suite_def {
 	const char *SuiteID_p;
-	struct adbg_case_def_head cases;
+	union {
+		struct adbg_case_def_head cases;
+		struct adbg_suite_def_head suites;
+	};
+	TAILQ_ENTRY(adbg_suite_def) link;
 } ADBG_Suite_Definition_t;
 
 #define ADBG_CASE_DEFINE(Suite, TestID, Run, Title) \
