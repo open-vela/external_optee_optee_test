@@ -24,6 +24,7 @@ WCFLAGS = $(filter-out $(ARCHCPUFLAGS) $(ARCHCFLAGS) $(ARCHINCLUDES) $(ARCHDEFIN
 WCFLAGS += --sysroot=$(WASI_SDK_ROOT)/share/wasi-sysroot -nostdlib $(MAXOPTIMIZATION)
 WCFLAGS += -I./include
 
+WCFLAGS += -I../../../../../../apps/interpreters/wamr/wamr/core/iwasm/include
 WCFLAGS += -I../../../../optee_nuttx/optee_nuttx/include
 WCFLAGS += -I../../../../optee_os/optee_os/core/include
 WCFLAGS += -I../../../../optee_os/optee_os/lib/libutee/include
