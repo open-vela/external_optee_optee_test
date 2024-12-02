@@ -1121,6 +1121,20 @@ static void xtest_tee_test_4001(ADBG_Case_t *c)
 		    continue;
 		}
 
+		if (hash_cases[n].algo == TEE_ALG_SHAKE128 &&
+		    !ta_crypt_cmd_is_algo_supported(c, &session, TEE_ALG_SHAKE128,
+						    TEE_CRYPTO_ELEMENT_NONE)) {
+		    Do_ADBG_Log("SHAKE128 not supported: skip subcase");
+			continue;
+		}
+
+		if (hash_cases[n].algo == TEE_ALG_SHAKE256 &&
+		    !ta_crypt_cmd_is_algo_supported(c, &session, TEE_ALG_SHAKE256,
+						    TEE_CRYPTO_ELEMENT_NONE)) {
+		    Do_ADBG_Log("SHAKE256 not supported: skip subcase");
+			continue;
+		}
+
 		Do_ADBG_BeginSubCase(c, "Hash case %d algo 0x%x",
 				     (int)n, (unsigned int)hash_cases[n].algo);
 
