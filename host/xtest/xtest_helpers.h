@@ -39,6 +39,7 @@ TEEC_Result xtest_teec_open_static_session(TEEC_Session *session,
 /* IO access macro */
 #define  IO(addr)  (*((volatile unsigned long *)(addr)))
 
+#undef UNUSED
 #define UNUSED(x) (void)(x)
 /*
  * Helpers for commands towards the crypt TA
