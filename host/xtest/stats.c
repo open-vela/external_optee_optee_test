@@ -280,7 +280,7 @@ retry:
 	for (n = 0; n < op.params[0].tmpref.size / sizeof(*stats); n++) {
 		if (n)
 			printf("\n");
-		printf("ta(%08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x)\n",
+		printf("ta(%08lx-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x)\n",
 			stats[n].uuid.timeLow, stats[n].uuid.timeMid,
 			stats[n].uuid.timeHiAndVersion,
 			stats[n].uuid.clockSeqAndNode[0],

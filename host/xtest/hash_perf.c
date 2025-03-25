@@ -36,7 +36,7 @@ static TEEC_SharedMemory out_shm = {
 
 static void errx(const char *msg, TEEC_Result res, uint32_t *orig)
 {
-	fprintf(stderr, "%s: 0x%08x", msg, res);
+	fprintf(stderr, "%s: 0x%" PRIx32, msg, res);
 	if (orig)
 		fprintf(stderr, " (orig=%d)", (int)*orig);
 	fprintf(stderr, "\n");
