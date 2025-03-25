@@ -4779,7 +4779,7 @@ static void xtest_tee_test_4007_dh(ADBG_Case_t *c)
 			continue;
 
 		Do_ADBG_BeginSubCase(c,
-				     "Generate DH key %d bits - Private bits = %d",
+				     "Generate DH key %" PRIu32 " bits - Private bits = %" PRIu32,
 				     key_types[n].key_size,
 				     *key_types[n].private_bits);
 		param_count = 0;
@@ -4815,7 +4815,7 @@ static void xtest_tee_test_4007_dh(ADBG_Case_t *c)
 			break;
 
 		Do_ADBG_EndSubCase(c,
-				   "Generate DH key %d bits - Private bits = %d",
+				   "Generate DH key %" PRIu32 " bits - Private bits = %" PRIu32,
 				   key_types[n].key_size,
 				   *key_types[n].private_bits);
 	}
@@ -4868,7 +4868,7 @@ static void xtest_tee_test_4007_dsa(ADBG_Case_t *c)
 		if (key_types[n].level > level)
 			continue;
 
-		Do_ADBG_BeginSubCase(c, "Generate DSA key %d bits",
+		Do_ADBG_BeginSubCase(c, "Generate DSA key %" PRIu32 " bits",
 				     key_types[n].key_size);
 		param_count = 0;
 
@@ -4889,7 +4889,7 @@ static void xtest_tee_test_4007_dsa(ADBG_Case_t *c)
 				param_count)))
 			break;
 
-		Do_ADBG_EndSubCase(c, "Generate DSA key %d bits",
+		Do_ADBG_BeginSubCase(c, "Generate DSA key %" PRIu32 " bits",
 				   key_types[n].key_size);
 	}
 
@@ -5153,7 +5153,7 @@ static void xtest_tee_test_4009(ADBG_Case_t *c)
 		if (pt->level > level)
 			continue;
 
-		Do_ADBG_BeginSubCase(c, "Derive ECDH key - algo = 0x%x",
+		Do_ADBG_BeginSubCase(c, "Derive ECDH key - algo = 0x%" PRIx32,
 				     pt->algo);
 		size_bytes = (pt->keysize + 7) / 8;
 		if (!ADBG_EXPECT_TEEC_SUCCESS(c,
@@ -5244,14 +5244,14 @@ static void xtest_tee_test_4009(ADBG_Case_t *c)
 							   sv_handle)))
 			goto out;
 
-		Do_ADBG_EndSubCase(c, "Derive ECDH key - algo = 0x%x",
+		Do_ADBG_EndSubCase(c, "Derive ECDH key - algo = 0x%" PRIx32,
 				   pt->algo);
 	}
 
 	goto noerror;
 
 out:
-	Do_ADBG_EndSubCase(c, "Derive ECDH key - algo = 0x%x", pt->algo);
+	Do_ADBG_EndSubCase(c, "Derive ECDH key - algo = 0x%" PRIx32, pt->algo);
 
 noerror:
 	TEEC_CloseSession(&session);

@@ -33,9 +33,9 @@ static void test_name(ADBG_Case_t *c)				 \
 								 \
 		if (!storage_info[i].available)			 \
 			continue;				 \
-		Do_ADBG_BeginSubCase(c, "Storage id: %08x", id); \
+		Do_ADBG_BeginSubCase(c, "Storage id: %" PRIu32, id); \
 		test_name##_single(c, id);			 \
-		Do_ADBG_EndSubCase(c, "Storage id: %08x", id);   \
+		Do_ADBG_EndSubCase(c, "Storage id: %" PRIu32, id);  \
 	}							 \
 }
 
