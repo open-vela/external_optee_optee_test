@@ -66,9 +66,9 @@ static const char glevel[] = "0";
 
 static char gsuitename[] = "regression" GP_SUITE PKCS11_SUITE FFA_SPMC_SUITE;
 
-void usage(char *program);
+static void usage(char *program);
 
-void usage(char *program)
+static void usage(char *program)
 {
 	printf("Usage: %s <options> [[-x] <test-id>]...]\n", program);
 	printf("\n");
