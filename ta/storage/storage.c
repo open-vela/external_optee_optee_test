@@ -437,14 +437,14 @@ TEE_Result ta_storage_cmd_key_in_persistent(uint32_t param_types,
 	result = TEE_AllocateTransientObject(TEE_TYPE_AES, key_size,
 					     &transient_key);
 	if (result != TEE_SUCCESS) {
-		EMSG("Failed to Allocate transient object handle : 0x%x",
+		EMSG("Failed to Allocate transient object handle : 0x%" PRIx32 "",
 		     result);
 		goto cleanup1;
 	}
 
 	result = TEE_GenerateKey(transient_key, key_size, NULL, 0);
 	if (result != TEE_SUCCESS) {
-		EMSG("Failed to generate a transient key: 0x%x", result);
+		EMSG("Failed to generate a transient key: 0x%" PRIx32 "", result);
 		goto cleanup2;
 	}
 
@@ -454,7 +454,7 @@ TEE_Result ta_storage_cmd_key_in_persistent(uint32_t param_types,
 					    flags, transient_key, NULL, 0,
 					    &persistent_key);
 	if (result != TEE_SUCCESS) {
-		EMSG("Failed to create a persistent key: 0x%x", result);
+		EMSG("Failed to create a persistent key: 0x%" PRIx32 "", result);
 		goto cleanup2;
 	}
 
@@ -473,7 +473,7 @@ TEE_Result ta_storage_cmd_key_in_persistent(uint32_t param_types,
 					    flags, transient_key, NULL, 0,
 					    NULL);
 	if (result != TEE_SUCCESS) {
-		EMSG("Failed to create a persistent key: 0x%x", result);
+		EMSG("Failed to create a persistent key: 0x%" PRIx32 "", result);
 		goto cleanup2;
 	}
 	persistent_key = transient_key;
@@ -492,7 +492,7 @@ TEE_Result ta_storage_cmd_key_in_persistent(uint32_t param_types,
 					  &objectID, sizeof(objectID),
 					  flags, &key);
 	if (result != TEE_SUCCESS) {
-		EMSG("Failed to open persistent key: 0x%x", result);
+		EMSG("Failed to open persistent key: 0x%" PRIx32 "", result);
 		goto cleanup2;
 	}
 
@@ -506,13 +506,13 @@ TEE_Result ta_storage_cmd_key_in_persistent(uint32_t param_types,
 	result = TEE_AllocateOperation(&encrypt_op, alg, TEE_MODE_ENCRYPT,
 				       keyInfo3.maxObjectSize);
 	if (result != TEE_SUCCESS) {
-		EMSG("Failed to allocate an operation: 0x%x", result);
+		EMSG("Failed to allocate an operation: 0x%" PRIx32 "", result);
 		goto cleanup3;
 	}
 
 	result = TEE_SetOperationKey(encrypt_op, key);
 	if (result != TEE_SUCCESS) {
-		EMSG("Failed to set operation key: 0x%x", result);
+		EMSG("Failed to set operation key: 0x%" PRIx32 "", result);
 		goto cleanup4;
 	}
 
